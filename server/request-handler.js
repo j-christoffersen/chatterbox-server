@@ -26,7 +26,8 @@ var messages = [
   {
     username: 'Jeff',
     text: 'not much'
-  }];
+  }
+];
 
 var requestHandler = function(request, response) {
 
@@ -37,10 +38,12 @@ var requestHandler = function(request, response) {
   
     
   var statusCode;
+  var responseBody;
 
   if (url === '/classes/messages') {
     if (method === 'GET') {
       statusCode = 200;
+      responseBody = JSON.stringify({results: messages});
     } else if (method === 'POST') {
       statusCode = 201;
       let body = [];
@@ -49,24 +52,48 @@ var requestHandler = function(request, response) {
       }).on('data', (chunk) => {
         body.push(chunk);
       }).on('end', () => {
-        messages.unshift(JSON.parse(body));
+        messages.unshift(JSON.parse(Buffer.concat(body).toString()));
       });
+      responseBody = JSON.stringify({results: messages});
     } else if (method === 'OPTIONS') {
       statusCode = 200;
+      responseBody = JSON.stringify({
+        'GET': {
+          'description': 'get all messages',
+        },
+        'POST': {
+          'description': 'post a message',
+          'parameters': {
+            'username': {
+              'type': 'string',
+              'description': 'name of user who is postiing the message',
+              'required': false
+            },
+            'text': {
+              'type': 'string',
+              'description': 'body of the message',
+              'required': false
+            },
+            'roomname': {
+              'type': 'string',
+              'description': 'property for client to use for filtering',
+              'required': false
+            }
+          }
+        }
+      });
+    } else {
+      statusCode = 405;
     }
   } else {
     statusCode = 404;
   }
   
   var headers = defaultCorsHeaders;
-  
-  headers['Content-Type'] = 'text/plain';
-
+  headers['Content-Type'] = 'application/json';
   response.writeHead(statusCode, headers);
-
-  response.end(JSON.stringify({results: messages}));
-    
-
+  response.end(responseBody);
+  
 
 };
 

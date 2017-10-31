@@ -72,6 +72,34 @@ describe('server', function() {
       done();
     });
   });
+  
+  it('Should not respond to PUT requests', function(done) {
+    var requestParams = {method: 'PUT',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Do my bidding!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(405);
+      done();
+    });
+  });
+  
+  it('Should not respond to DELETE requests', function(done) {
+    var requestParams = {method: 'DELETE',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Do my bidding!'}
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(405);
+      done();
+    });
+  });
 
 
 });
