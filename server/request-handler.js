@@ -18,30 +18,59 @@ var defaultCorsHeaders = {
   'access-control-max-age': 10 // Seconds.
 };
 
+var messages = [
+  {
+    username: 'Jackson',
+    text: 'what\'s up'
+  },
+  {
+    username: 'Jeff',
+    text: 'not much'
+  }];
+
 var requestHandler = function(request, response) {
 
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
   
   var { headers, method, url } = request;
   
+  
+    
   var statusCode;
 
   if (url === '/classes/messages') {
-    statusCode = 200;
+    if (method === 'GET') {
+      statusCode = 200;
+    } else if (method === 'POST') {
+      statusCode = 201;
+      let body = [];
+      request.on('error', (err) => {
+        console.error(err);
+      }).on('data', (chunk) => {
+        body.push(chunk);
+      }).on('end', () => {
+        messages.unshift(JSON.parse(body));
+      });
+    } else if (method === 'OPTIONS') {
+      statusCode = 200;
+    }
   } else {
     statusCode = 404;
   }
-
-
+  
   var headers = defaultCorsHeaders;
   
   headers['Content-Type'] = 'text/plain';
 
   response.writeHead(statusCode, headers);
 
-  response.end('Hello, World!');
+  response.end(JSON.stringify({results: messages}));
+    
+
+
 };
 
 
-module.exports = requestHandler;
+
+module.exports.requestHandler = requestHandler;
 

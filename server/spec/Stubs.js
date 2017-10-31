@@ -32,6 +32,8 @@ module.exports = {
       if (type === 'end') {
         callback();
       }
+      
+      return this;
 
     }.bind(this);
   }
