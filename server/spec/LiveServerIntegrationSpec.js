@@ -1,7 +1,7 @@
 var request = require('request');
 var expect = require('chai').expect;
 
-describe('server', function() {
+describe('Live Server Integration', function() {
   it('should respond to GET requests for /classes/messages with a 200 status code', function(done) {
     request('http://127.0.0.1:3000/classes/messages', function(error, response, body) {
       expect(response.statusCode).to.equal(200);
@@ -97,6 +97,21 @@ describe('server', function() {
 
     request(requestParams, function(error, response, body) {
       expect(response.statusCode).to.equal(405);
+      done();
+    });
+  });
+  
+  it('should deny POST requests to /classes/messages that don\'t meet required params', function(done) {
+    var requestParams = {method: 'POST',
+      uri: 'http://127.0.0.1:3000/classes/messages',
+      json: {
+        username: 'Jono',
+        text: 'Do my bidding!'
+      }
+    };
+
+    request(requestParams, function(error, response, body) {
+      expect(response.statusCode).to.equal(201);
       done();
     });
   });

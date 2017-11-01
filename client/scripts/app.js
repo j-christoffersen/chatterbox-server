@@ -64,9 +64,7 @@ var app = {
       contentType: 'application/json',
       success: function(data) {
         // data = JSON.parse(data);
-        console.log(data);
-        // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+
 
         // Store messages for caching later
         app.messages = data.results;
